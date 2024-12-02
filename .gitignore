@@ -18,3 +18,4 @@ build/package/localpycs/pyimod03_ctypes.pyc
 build/package/localpycs/pyimod04_pywin32.pyc
 build/package/localpycs/struct.pyc
 dist/ScreenDimmer.exe
+dist/OLEDBlanker.exe
