@@ -1,8 +1,9 @@
 from PyQt6.QtWidgets import QWidget, QDialog, QLabel, QSpinBox, QVBoxLayout, QComboBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QRect
+from utils import get_display_info  # Add this import
 
 class BlackScreen(QWidget):
-    def __init__(self, screen, dimmer):
+    def __init__(self, display_info, dimmer):
         super().__init__()
         self.dimmer = dimmer
         self.setWindowFlags(
@@ -12,7 +13,14 @@ class BlackScreen(QWidget):
         )
         
         self.setStyleSheet("background-color: black;")
-        geometry = screen.geometry()
+        
+        # Use the geometry from display_info
+        geometry = QRect(
+            display_info['geometry']['x'],
+            display_info['geometry']['y'],
+            display_info['geometry']['width'],
+            display_info['geometry']['height']
+        )
         self.setGeometry(geometry)
         
         self.blank_cursor = Qt.CursorShape.BlankCursor
@@ -44,16 +52,24 @@ class SettingsDialog(QDialog):
         
         layout = QVBoxLayout()
         
+        # Get detailed display information
+        self.displays = get_display_info()
+        
         # Monitor selection
         monitor_label = QLabel("Select Monitor:")
         self.monitor_combo = QComboBox()
-        for i, screen in enumerate(screens):
-            geometry = screen.geometry()
-            self.monitor_combo.addItem(f"Monitor {i+1} ({geometry.width()}x{geometry.height()})")
+        
+        for display in self.displays:
+            name = display['name']
+            geometry = display['geometry']
+            primary = " (Primary)" if display['is_primary'] else ""
+            self.monitor_combo.addItem(
+                f"{name}{primary} - {geometry['width']}x{geometry['height']}"
+            )
         
         # Set saved monitor selection
         saved_monitor = self.settings_manager.get("selected_monitor", 0)
-        self.monitor_combo.setCurrentIndex(min(saved_monitor, len(screens) - 1))
+        self.monitor_combo.setCurrentIndex(min(saved_monitor, len(self.displays) - 1))
         
         # Timeout setting
         timeout_label = QLabel("Idle timeout (minutes):")

@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu
 from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QAction
 
-from utils import get_idle_time, create_tray_icon
+from utils import get_idle_time, create_tray_icon, get_display_info
 from media_detector import MediaDetector
 from ui_components import BlackScreen, SettingsDialog
 from settings_manager import SettingsManager
@@ -48,16 +48,20 @@ class ScreenDimmer:
         self.settings_dialog.monitor_combo.currentIndexChanged.connect(self.update_black_screen)
     
     def update_black_screen(self):
-        selected_screen = self.screens[self.settings_dialog.get_selected_monitor_index()]
-        if self.black_screen:
-            was_visible = self.black_screen.isVisible()
-            self.black_screen.hide()
-            self.black_screen.deleteLater()
-            self.black_screen = BlackScreen(selected_screen, self)
-            if was_visible:
-                self.black_screen.show()
-        else:
-            self.black_screen = BlackScreen(selected_screen, self)
+        displays = get_display_info()  # Add import at top of file if needed
+        selected_index = self.settings_dialog.get_selected_monitor_index()
+        
+        if selected_index < len(displays):
+            selected_display = displays[selected_index]
+            if self.black_screen:
+                was_visible = self.black_screen.isVisible()
+                self.black_screen.hide()
+                self.black_screen.deleteLater()
+                self.black_screen = BlackScreen(selected_display, self)
+                if was_visible:
+                    self.black_screen.show()
+            else:
+                self.black_screen = BlackScreen(selected_display, self)
     
     def setup_menu(self):
         toggle_action = QAction("Toggle Screen", self.menu)
