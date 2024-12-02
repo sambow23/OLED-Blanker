@@ -10,7 +10,7 @@ A system tray application designed to blank OLED displays on Windows without DDC
 
 ## Requirements
 ```
-pip install PyQt6 winsdk
+pip install PyQt6 winsdk pywin32
 ```
 
 ## Usage
