@@ -56,10 +56,14 @@ def get_display_info():
             display_device.cb = sizeof(display_device)
             
             if windll.user32.EnumDisplayDevicesW(monitor_info.szDevice, 0, ctypes.byref(display_device), 0):
+                # Extract display number from DeviceName (usually in format \\.\DISPLAY1)
+                display_num = ''.join(filter(str.isdigit, monitor_info.szDevice.split('\\')[-1]))
+                
                 displays.append({
                     'handle': hMonitor,
                     'name': display_device.DeviceString,
                     'is_primary': bool(monitor_info.dwFlags & 0x1),
+                    'display_number': display_num,  # Add this
                     'geometry': {
                         'x': lprcMonitor.contents.left,
                         'y': lprcMonitor.contents.top,

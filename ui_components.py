@@ -63,8 +63,9 @@ class SettingsDialog(QDialog):
             name = display['name']
             geometry = display['geometry']
             primary = " (Primary)" if display['is_primary'] else ""
+            display_num = display['display_number']
             self.monitor_combo.addItem(
-                f"{name}{primary} - {geometry['width']}x{geometry['height']}"
+                f"Display {display_num}: {name}{primary} - {geometry['width']}x{geometry['height']}"
             )
         
         # Set saved monitor selection
